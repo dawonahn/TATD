@@ -56,7 +56,7 @@ def read_dataset(name, device, path = '../data'):
         stensor = read_tensor(path, name, dtype)
         dct[dtype] = stensor.to(device)
     
-    dct['tmode'] = 3 ### Default value
+    dct['tmode'] = 0 ### Default value
     dct['nmode'] = len(stensor.shape)
     dct['ndim'] = max(dct['train'].shape, dct['valid'].shape, dct['test'].shape)
     dct['ts_beta'] = make_min_max_sparsity(dct['train'], dct['tmode'], device)

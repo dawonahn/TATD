@@ -1,9 +1,14 @@
 gpu=$1
-scheme=$2
 lr=0.01
 
-for count in 1
+for lr in 0.00001
 do
-        python3 main.py --gpu $gpu --name mair_std --opt_scheme $scheme --lr $lr --penalty 100 --window 9  --count $count --sparse 1
-        #python3 main.py --gpu $gpu --name mair_std --opt_scheme $scheme --lr $lr --penalty 10 --window 5  --count $count --sparse 0 
+for count in 31
+do
+#        python3 main.py --gpu $gpu --name ncfd --opt_scheme als_adam --lr $lr --penalty 0.1 --window 3  --count $count --sparse 1
+#       python3 main.py --gpu $gpu --name ncfd --opt_scheme adam --lr $lr --penalty 0.1 --window 3  --count $count --sparse 1
+#        python3 main.py --gpu $gpu --name ncfd --opt_scheme alternating_adam --lr $lr --penalty 0.1 --window 3  --count $count --sparse 1
+        python3 main.py --gpu $gpu --name ncfd --opt_scheme sgd --lr $lr --penalty 0.1 --window 3  --count $count --sparse 1
+        python3 main.py --gpu $gpu --name ncfd --opt_scheme als_agd --lr $lr --penalty 0.1 --window 3  --count $count --sparse 1
+done
 done

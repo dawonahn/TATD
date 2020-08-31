@@ -97,7 +97,7 @@ def als_train_model(dataset, model, penalty, opt_scheme, lr, rank, device,
                     trn_rmse, trn_mae = evaluate(model, train)
                     val_rmse, val_mae = evaluate(model, valid)
                     #print('Iter', n_iter, 'Mode', mode, 'Train', trn_rmse, 'Valid', val_rmse)
-                    if inner_num > 1:
+                    if inner_num > 10:
                         stop = False
                     if val_rmse > inner_rmse:
                         # break
@@ -118,10 +118,10 @@ def als_train_model(dataset, model, penalty, opt_scheme, lr, rank, device,
             f.write(f'{n_iter:5d}\t{elapsed:.5f}\t')
             f.write(f'{trn_rmse:.5f}\t{trn_mae:.5f}\t')
             f.write(f'{val_rmse:.5f}\t{val_mae:.5f}\n')
-        if stop_iter == 3 or n_iter == 999:
+        if stop_iter == 1 or n_iter == 999:
             te_rmse, te_mae = evaluate(model, test)
             with open(total_path, 'a') as f1:
-                f1.write(f'{count:5d}\t{n_iter:5d}\t{elapsed:.3f}\t{model.sparse}\t')
+                f1.write(f'{count}\t{n_iter:5d}\t{elapsed:.3f}\t{model.sparse}\t')
                 f1.write(f'{model.factors[0].shape[1]:2d}\t')
                 f1.write(f'{window:2d}\t{penalty:.3f}\t')
                 f1.write(f'{opt_scheme}\t{lr:5f}\t')

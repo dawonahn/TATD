@@ -22,7 +22,7 @@ def tatd_parser():
     parser.add_argument('--opt_scheme', type=str, default='adam', help=u"Alternating Adam")
     parser.add_argument('--lr', type=float, default='0.001', help=u"Learning rate")
     parser.add_argument('--gpu', type=int, default=2, help=u"GPU device")
-    parser.add_argument('--count', type=int, default=10, help=u"Experiment for average")
+    parser.add_argument('--count', type=str, default=10, help=u"Experiment for average")
     args = parser.parse_args()
 
     name = args.name
@@ -35,7 +35,7 @@ def tatd_parser():
     opt_scheme = args.opt_scheme
     lr = args.lr
     ###
-    gpu, count = args.gpu
+    gpu= args.gpu
     count = args.count
 
     return name, sparse, rank, window, penalty, opt_scheme, lr, gpu, count
