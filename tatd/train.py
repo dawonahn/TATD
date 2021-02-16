@@ -26,6 +26,7 @@ def evaluate(model, data):
         e1, e2 = rmse(vals, rec), mae(vals, rec)
     return e1.cpu().item(), e2.cpu().item()
 
+        
 def training(model, opt, train, penalty, tmode, nmode):
 
     for mode in range(nmode):
@@ -48,8 +49,7 @@ def training(model, opt, train, penalty, tmode, nmode):
     opt.step()
 
     return loss
-        
-def train_model(dataset, model, penalty, opt_scheme, lr, loss_path, model_path, total_path):
+def train_model(dataset, model, penalty, opt_scheme, lr, loss_path, model_path, total_path, exp):
     
     train, valid, test  = dataset['train'], dataset['valid'], dataset['test']
     nmode, tmode = dataset['nmode'], dataset['tmode']
@@ -73,9 +73,13 @@ def train_model(dataset, model, penalty, opt_scheme, lr, loss_path, model_path, 
     old_rmse, stop_iter = 1e+5, 0
 
     for n_iter in trange(1, 35000):
-        loss = training(model, opt, train, penalty, tmode, nmode)
+        if exp == 'slice':
+            loss = train_slice(model, opt, train, penalty, tmode, nmode)
+        else:
+            loss = training(model, opt, train, penalty, tmode, nmode)
         trn_rmse, trn_mae = evaluate(model, train) 
         val_rmse, val_mae = evaluate(model, valid)
+        print(f"Train RMSE : {trn_rmse} Valid RMSE : {val_rmse}")
         
         if isNaN(trn_rmse):
             print("Nan break")
@@ -89,10 +93,10 @@ def train_model(dataset, model, penalty, opt_scheme, lr, loss_path, model_path, 
             f.write(f'{n_iter:5d}\t{elapsed:.5f}\t')
             f.write(f'{trn_rmse:.5f}\t{trn_mae:.5f}\t')
             f.write(f'{val_rmse:.5f}\t{val_mae:.5f}\n')
-        if stop_iter == 5 or n_iter > 35000:
+        if stop_iter == 2 or n_iter > 35000:
             te_rmse, te_mae = evaluate(model, test)
             with open(total_path, 'a') as f1:
-                f1.write(f'{count:5d}\t{n_iter:5d}\t{elapsed}\t{model.sparse}\t')
+                f1.write(f'{exp}\t{count}\t{n_iter:5d}\t{elapsed}\t{model.sparse}\t')
                 f1.write(f'{model.factors[0].shape[1]:2d}\t')
                 f1.write(f'{window:2d}\t{penalty:.3f}\t')
                 f1.write(f'{opt_scheme}\t{lr:5f}\t')

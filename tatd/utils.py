@@ -1,44 +1,43 @@
 
 import os
 import torch
-from dotmap import DotMap
+import numpy as np
+import imageio
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+import seaborn as sns
+
+plt.switch_backend('agg')
+cmap = sns.diverging_palette(220, 10, as_cmap=True)
 
 
-def get_path(name, sparse, rrank, window, penalty, opt_scheme, lr, count):
+def get_path(name, weightf, sparse, rrank, window, penalty, scheme, lr , count, exp):
     
-    path = f'../out/{opt_scheme}/{name}/training/'
-    path1= f'../out/{opt_scheme}/{name}/model/'
+    path = f'out/{scheme}/{name}/training/'
+    path1= f'out/{scheme}/{name}/model/'
+    path2= f'out/{scheme}/{name}/loss/'
+    path3= f'out/{scheme}/{name}/factors/'
 
-    if not os.path.isdir(path):
-        os.makedirs(path)
-    if not os.path.isdir(path1):
-        os.makedirs(path1)
+    for p in [path, path1, path2, path3]:
+        if not os.path.isdir(p):
+            os.makedirs(p)
     
-    info = f'{sparse}_r_{rrank}_w_{window}_p_{penalty}_lr_{lr}_{count}'
+    info = f'{weightf}_{sparse}_r_{rrank}_w_{window}_p_{penalty}_lr_{lr}_{count}_{exp}'
     
-    loss_path = os.path.join(path, info + '.txt')
-
+    train_path = os.path.join(path, info + '.txt')
     model_path = os.path.join(path1, info)
+    loss_path = os.path.join(path2, info + '.txt')
+    f_path = os.path.join(path3, info)
         
-    total_loss = f'../out/{opt_scheme}/{name}/best.txt'
+    best_path = f'out/{scheme}/{name}/best.txt'
     
-    if not os.path.exists(total_loss):
-        with open(total_loss, 'w') as f:
-            f.write('No.\titers\ttime\tsparse\trank\twindow\tpenalty\tscheme\tlr\trmse\tmae\n')
+    if not os.path.exists(best_path):
+        with open(best_path, 'w') as f:
+            f.write('No.\titers\ttime\tweightf\tsparse\trank\twindow\tpenalty\tscheme\tlr\trmse\tmae\texp\n')
         f.close()
 
-    return loss_path, model_path, total_loss
+    return train_path, model_path, loss_path, f_path, best_path
 
-
-def get_device(gpu = None):
-    
-    if torch.cuda.is_available():
-        device = torch.device('cuda')
-    elif torch.cuda.is_avaliable and gpu is not None:
-        device = torch.device('cuda:{}'.format(gpu))
-    else:
-        device = torch.device('cpu')
-    return device
 
 def save_checkpoints(model, path):
     """
@@ -46,3 +45,41 @@ def save_checkpoints(model, path):
     """
     os.makedirs(os.path.dirname(path), exist_ok=True)
     torch.save(dict(model_state=model.state_dict()), path)
+
+
+def draw_factors(nmode, tmode, factors, num, path):
+    path_img = os.path.join(path, 'img')
+    path_p = os.path.join(path, 'p')
+
+    factors = [f.detach().cpu().numpy() for f in factors]
+
+    fig = plt.figure(figsize = (10, 6), dpi = 100)
+
+    sns.heatmap(factors[tmode], cmap = cmap)
+
+    if not os.path.exists(path_img):
+        os.makedirs(path_img)
+    if not os.path.exists(path_p):
+        os.makedirs(path_p)
+
+    plt.savefig(f"{path_img}/{num}.png", bbox_indches = 'tight')
+    plt.close(fig)
+
+    np.savetxt(f"{path_p}/{num}.txt", factors[tmode], delimiter='\t', )
+
+
+def make_images(path):
+
+    image_folder = os.fsencode(path)
+
+    filenames = []
+
+    for file in os.listdir(image_folder):
+        filename = os.fsdecode(file)
+        if filename.endswith( ('.pdf', '.png') ):
+            filenames.append(filename)
+    filenames.sort() # this iteration technique has no built in order, so sort the frames
+
+    images = list(map(lambda filename: imageio.imread(f'{path}/{filename}'), filenames))
+
+    imageio.mimsave(os.path.join(f'{path}/tfactor.gif'), images, duration = 0.3) # modify duration as needed
