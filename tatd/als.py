@@ -70,9 +70,7 @@ def sparse_least_square(model, train, penalty, mode, rank):
     
     factor = torch.bmm(torch.inverse(mat_b2), vec_c2.view(-1, rank, 1)).sum(dim = 2)
     factor = torch.where(torch.abs(factor) < 0.000001, torch.zeros_like(factor), factor)
-    print(model.factors[mode][:1])
     model.factors[mode].data = factor.to(DEVICE)
-    print(model.factors[mode][:1])
     
     
 
