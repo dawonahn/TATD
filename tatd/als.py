@@ -10,7 +10,6 @@ from tqdm import trange
 from tatd.tatd import *
 from tatd.utils import *
 from tatd.train import *
-from tatd.attn_smooth import *
 
 DEVICE=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
