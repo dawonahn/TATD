@@ -54,18 +54,18 @@ def sparse_least_square(model, train, penalty, mode, rank):
 
     values = train.values()
     indices = train.indices()
-    uniq_row = indices[mode].unique()
+    rows = indices[mode].shape[0]
     idx = indices[mode]
 
     kr_prod, indices_list = my_khatri_rao(model.factors, indices, skip_matrix=mode)
 
     mat_b = torch.bmm(kr_prod.view(-1, rank, 1), kr_prod.view(-1, 1, rank))
-    mat_b2 = torch.zeros((len(uniq_row), rank, rank), dtype = torch.float).to(DEVICE)
+    mat_b2 = torch.zeros((rows, rank, rank), dtype = torch.float).to(DEVICE)
     mat_b2 = mat_b2.scatter_add(0, idx.view(-1, 1, 1).expand(-1, rank, rank), mat_b.float())
-    mat_b2 = mat_b2 + torch.stack([torch.eye(rank).to(DEVICE)] * len(uniq_row)) * penalty
+    mat_b2 = mat_b2 + torch.stack([torch.eye(rank).to(DEVICE)] * rows) * penalty
     
     vec_c = kr_prod * values.view(-1, 1)
-    vec_c2 = torch.zeros((len(uniq_row), rank), dtype = torch.float).to(DEVICE)
+    vec_c2 = torch.zeros((rows, rank), dtype = torch.float).to(DEVICE)
     vec_c2 = vec_c2.scatter_add(0, idx.view(-1, 1).expand(-1, rank), vec_c.float())
     
     factor = torch.bmm(torch.inverse(mat_b2), vec_c2.view(-1, rank, 1)).sum(dim = 2)
