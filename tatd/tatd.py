@@ -7,7 +7,7 @@ from torch.nn import functional as F
 
 import tensorly as tl
 from tensorly.random import check_random_state
-from tatd.attn_smooth import *
+
 tl.set_backend('pytorch')
 random_state = 1234
 rng = check_random_state(random_state)
