@@ -24,9 +24,9 @@ This is a PyTorch and TensorLy implementation of **Time-Aware Tensor Decompositi
 
 |         Name        |          Description          |      Size      |   NNZ  | Granularity in Time |                                    Original Source                                   |
 |:-------------------:|:-----------------------------:|:--------------:|:------:|:-------------------:|:------------------------------------------------------------------------------------:|
-| Beijing Air Quality | locations x pollutants x time | 12 x 6 x 5994  | 618835 | hourly              | [Link](https://archive.ics.uci.edu/ml/datasets/Beijing+Multi-Site+Air-Quality+Datal) |
-| Madrid Air Quality  | locations x pollutants x time | 26 x 17 x 3043 | 383279 | hourly              | [Link](https://www.kaggle.com/decide-soluciones/air-quality-madrid)                  |
-| Radar Traffic       | locations x directions x time | 17 x 5 x 6419  | 181719 | hourly              | [Link](https://www.kaggle.com/vinayshanbhag/radar-traffic-data)                      |
-| Indoor Condition    | locations x sensor x time     | 9 x 2 x 2622   | 59220  | hourly              | [Link](https://archive.ics.uci.edu/ml/datasets/Appliances+energy+prediction)         |
-| Intel Lab Sensor    | locations x sensor x time     | 54 x 4 x 1152  | 513508 | every 10 minutes    | [Link](http://db.csail.mit.edu/labdata/labdata.html)                                 |
+| Beijing Air Quality | time x locations x pollutants | 35064 X 12 x 6 x 5994  | 2454305 | hourly              | [Link](https://archive.ics.uci.edu/ml/datasets/Beijing+Multi-Site+Air-Quality+Datal) |
+| Madrid Air Quality  | time X locations x pollutants | 2678 X 26 x 17 x 3043 | 337759 | daily              | [Link](https://www.kaggle.com/decide-soluciones/air-quality-madrid)                  |
+| Radar Traffic       | time X locations x directions | 17937 X 17 x 5 x 6419  | 495685 | hourly              | [Link](https://www.kaggle.com/vinayshanbhag/radar-traffic-data)                      |
+| Indoor Condition    | time X locations x sensor     | 19735 X 9 x 2 x 2622   | 241201  | every 10 minutes              | [Link](https://archive.ics.uci.edu/ml/datasets/Appliances+energy+prediction)         |
+| Server Room         | time X air conditioning x server power x location     | 4157 x 3 x 3 x 34  | 1009426 | 1 second    | [Link](https://zenodo.org/record/3610078#.XlNpAigzaM8)                                 |
 
