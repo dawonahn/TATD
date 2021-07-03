@@ -47,39 +47,3 @@ def save_checkpoints(model, path):
     torch.save(dict(model_state=model.state_dict()), path)
 
 
-def draw_factors(nmode, tmode, factors, num, path):
-    path_img = os.path.join(path, 'img')
-    path_p = os.path.join(path, 'p')
-
-    factors = [f.detach().cpu().numpy() for f in factors]
-
-    fig = plt.figure(figsize = (10, 6), dpi = 100)
-
-    sns.heatmap(factors[tmode], cmap = cmap)
-
-    if not os.path.exists(path_img):
-        os.makedirs(path_img)
-    if not os.path.exists(path_p):
-        os.makedirs(path_p)
-
-    plt.savefig(f"{path_img}/{num}.png", bbox_indches = 'tight')
-    plt.close(fig)
-
-    np.savetxt(f"{path_p}/{num}.txt", factors[tmode], delimiter='\t', )
-
-
-def make_images(path):
-
-    image_folder = os.fsencode(path)
-
-    filenames = []
-
-    for file in os.listdir(image_folder):
-        filename = os.fsdecode(file)
-        if filename.endswith( ('.pdf', '.png') ):
-            filenames.append(filename)
-    filenames.sort() # this iteration technique has no built in order, so sort the frames
-
-    images = list(map(lambda filename: imageio.imread(f'{path}/{filename}'), filenames))
-
-    imageio.mimsave(os.path.join(f'{path}/tfactor.gif'), images, duration = 0.3) # modify duration as needed

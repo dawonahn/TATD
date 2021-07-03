@@ -82,10 +82,7 @@ class Tatd(nn.Module):
                 for mode in range(nmode)]
         self.factors = nn.ParameterList(lst)
         
-        if weightf == 'kernel':   
-            self.smooth = Kernel(window, self.density).to(DEVICE)
-        else:
-            raise NotImplementedError
+        self.smooth = Kernel(window, self.density).to(DEVICE)
       
         self.reset_parameters()
        

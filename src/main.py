@@ -1,9 +1,9 @@
 
-from tatd.utils import *
-from tatd.read import *
-from tatd.train import *
-from tatd.als import *
 import argparse
+from src.utils import *
+from src.read import *
+from src.train import *
+from src.als import *
 
 torch.manual_seed(1234)
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -63,7 +63,6 @@ def main():
     als_train_model(dataset, model, penalty, scheme, lr, rank, 
                     t_path, m_path, l_path, f_path, b_path)
 
-    make_images(f_path + '/img')
 
 if __name__ == '__main__':
     main()

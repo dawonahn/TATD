@@ -26,30 +26,6 @@ def empty_slice(df, tmode):
     df = df.reset_index(drop = True)
     return df
 
-def local_sparsity(data, tmode, w, mmin = 0.1, mmax = 0.9):
-    
-    npy = data.indices().cpu().numpy()
-    df = pd.DataFrame(npy.T)
-    
-    tmp = empty_slice(df, tmode)
-    tmp['max_'] = 0
-    
-    max_ = tmp[[0]].max()[0]
-    w1 = w
-    w2 = int((w1-1)/2)
-    idxs = make_index(max_, w1, w2)
-
-    idxs = np.where(idxs > 0, idxs, 0)
-    idxs = np.where(idxs < max_, idxs, max_)
-
-    for i in range(len(idxs)):
-        tmp.at[i, 'max_'] = list(tmp.iloc[idxs[i]].max())[-2]
-
-    ls = tmp[1]/tmp['max_']
-    ls2 = (mmax - mmin) * (ls - ls.min()) / (ls.max() - ls.min())
-    ls2 = np.where(np.isnan(ls2), 1, ls2)
-    density = torch.FloatTensor(1 -ls2).to(DEVICE)
-    return density
 
 def global_sparsity(data, tmode):
 
@@ -74,15 +50,12 @@ def global_sparsity(data, tmode):
 
 
     df = df.sort_values(by = 0)
-    
     dff = df[1]
     max_, min_ = dff.max(), dff.min()
 
     min_max = (0.999 - 0.001) * (dff - min_)/(max_ - min_) 
     min_max = np.where(np.isnan(min_max), 1, min_max)
     return 1 - torch.FloatTensor(list(min_max+ 0.001)).to(DEVICE)
-#    min_max = (0.9 - 0.1) * (dff - min_)/(max_ - min_) 
-#    return 1 - torch.FloatTensor(list(min_max+ 0.1)).to(DEVICE)
 
 
 def read_tensor(path, name, dtype):
@@ -90,7 +63,6 @@ def read_tensor(path, name, dtype):
     ''' Read COO format tensor (sparse format) '''
 
     i =  torch.LongTensor(np.load(os.path.join(path, name, dtype + '_idxs.npy')))
-    
     v = torch.FloatTensor(np.load(os.path.join(path, name, dtype +'_vals.npy')))
     stensor = torch.sparse.FloatTensor(i.t(), v).coalesce()
     return stensor
@@ -111,7 +83,6 @@ def read_dataset(name, window, path = '../data'):
     dct['nmode'] = len(stensor.shape)
     dct['ndim'] = max(dct['train'].shape, dct['valid'].shape, dct['test'].shape)
     dct['g_beta'] = global_sparsity(dct['train'], dct['tmode'])
-    #dct['l_beta'] = local_sparsity(dct['train'], dct['tmode'], window,)
 
     return dct
 
