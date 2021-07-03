@@ -12,10 +12,10 @@ File: src/main.py
 '''
 
 import argparse
-from src.utils import *
-from src.read import *
-from src.train import *
-from src.als import *
+from als import *
+from read import *
+from train import *
+from utils import *
 
 torch.manual_seed(1234)
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -23,13 +23,13 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def tatd_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--name', type=str, default='indoor', help=u"Dataset")
-    parser.add_argument('--sparse', type=float, default=0, help=u"Sparsity penalty")
+    parser.add_argument('--sparse', type=float, default=1, help=u"Sparsity penalty")
     parser.add_argument('--weightf', type=str, default='kernel', help=u"Weight function")
     parser.add_argument('--rank', type=int, default=10, help=u"Size of factor matrix")
-    parser.add_argument('--window', type=int, default=7, help=u"Window size")
+    parser.add_argument('--window', type=int, default=3, help=u"Window size")
     parser.add_argument('--penalty', type=float, default=1, help=u"Strength of penalty")
     parser.add_argument('--scheme', type=str, default='als_adam', help=u"Optimizer scheme")
-    parser.add_argument('--lr', type=float, default='0.001', help=u"Learning rate")
+    parser.add_argument('--lr', type=float, default='0.01', help=u"Learning rate")
     parser.add_argument('--count', type=str, default=1, help=u"Experiment for average")
     parser.add_argument('--exp', type=str, default="default", help=u"Experiment type")
     args = parser.parse_args()
@@ -54,7 +54,7 @@ def main():
 
     name, weightf, sparse, rank, window, penalty, scheme, lr, count, exp = tatd_parser()
 
-    t_path, m_path, l_path, f_path, b_path = get_path(name, weightf, sparse, 
+    t_path, m_path, l_path, b_path = get_path(name, weightf, sparse, 
                                                 rank, window, penalty,
                                                 scheme, lr, count, exp)
 
@@ -73,7 +73,7 @@ def main():
     print('---------------------------------------------------------------------------')
 
     als_train_model(dataset, model, penalty, scheme, lr, rank, 
-                    t_path, m_path, l_path, f_path, b_path)
+                    t_path, m_path, l_path, b_path)
 
 
 if __name__ == '__main__':

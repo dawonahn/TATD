@@ -19,8 +19,8 @@ import torch.nn as nn
 
 from tqdm import tqdm
 from tqdm import trange
-from tatd.tatd import *
-from tatd.utils import *
+from tatd import *
+from utils import *
 
 def isNaN(num):
     ''' Find the NaN value'''

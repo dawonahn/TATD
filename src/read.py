@@ -78,7 +78,7 @@ def read_tensor(path, name, dtype):
     stensor = torch.sparse.FloatTensor(i.t(), v).coalesce()
     return stensor
 
-def read_dataset(name, window, path = '../data'):
+def read_dataset(name, window, path = 'data'):
     ''' Read data and make metadata '''
     
     dct = {}

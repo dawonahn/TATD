@@ -16,9 +16,9 @@ import torch
 import torch.optim as optim
 
 from tqdm import trange
-from tatd.tatd import *
-from tatd.utils import *
-from tatd.train import *
+from tatd import *
+from utils import *
+from train import *
 
 DEVICE=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -38,7 +38,7 @@ def gradient(model, opt, train, penalty, tmode):
 
 
 def my_khatri_rao(matrices, indices_list, skip_matrix=None):
-    ''' Implement Khatri Rao Product'''
+    ''' Implement a Khatri Rao Product'''
 
     if skip_matrix is not None:
         matrices = [matrices[i] for i in range(len(matrices)) if i != skip_matrix]
@@ -86,8 +86,8 @@ def sparse_least_square(model, train, penalty, mode, rank):
     
 
 def als_train_model(dataset, model, penalty, opt_scheme, lr, rank,
-                    t_path, m_path, l_path, f_path, b_path):
-    ''' train a model with ALS+Adam '''
+                    t_path, m_path, l_path, b_path):
+    ''' Train a model with ALS+Adam '''
 
     stop_sign = 3
     name = dataset['name']
@@ -135,12 +135,6 @@ def als_train_model(dataset, model, penalty, opt_scheme, lr, rank,
             trn_rmse, trn_mae = evaluate(model, train)
             val_rmse, val_mae = evaluate(model, valid)
             t.set_description(f'trn_rmse : {trn_rmse:.4f} val_rmse : {val_rmse:.4f} rec loss :{rloss:.4f} s loss : {sloss:.4f}')
-
-            ### Draw the time factor
-            if (n_iter % 10) == 0:
-                draw_factors(nmode, tmode, model.factors, c, f_path)
-                c += 1
-
 
             if val_rmse > old_rmse and n_iter > 10:
                 stop_iter += 1

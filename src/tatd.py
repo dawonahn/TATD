@@ -8,7 +8,7 @@ Authors:
     - Data Mining Lab at Seoul National University.
 
 File: src/tatd.py
-    - Contains source code for implementation of TATD.
+    - Contains source code for the TATD model.
 '''
 
 import numpy as np
@@ -56,7 +56,7 @@ class Kernel(nn.Module):
         self.weight = self.gaussian().to(DEVICE)
         
     def gaussian(self):
-    ''' Make a Gaussian kernel'''
+        ''' Make a Gaussian kernel'''
         window = int(self.window-1)/2
         sigma2 = self.sigma * self.sigma
         x = torch.FloatTensor(np.arange(-window, window+1))
@@ -67,7 +67,7 @@ class Kernel(nn.Module):
 
     
     def forward(self,factor):
-    ''' Perform a Gaussian kernel smoothing on a temporal factor'''
+        ''' Perform a Gaussian kernel smoothing on a temporal factor'''
         row, col = factor.shape
         conv = F.conv2d(factor.view(1, 1, row, col), self.weight, 
                           padding = (int((self.window-1)/2), 0))
@@ -75,7 +75,7 @@ class Kernel(nn.Module):
 
     
 class Tatd(nn.Module):
-    ''' Time-Aware Tensor Decomposition '''
+    ''' Implement Time-Aware Tensor Decomposition '''
 
     def __init__(self, nmode, ndim, tmode, density, rank, window, weightf, sparse, exp):
        
@@ -106,15 +106,15 @@ class Tatd(nn.Module):
                 f.requires_grad = False
 
     def forward(self, indices_list):
-        '''Reconstruction the tensor with nonzero's indices'''
+        '''Reconstruct the tensor with nonzero's indices'''
         return krprod(self.factors, indices_list)
 
     def turn_off_grad(self, mode):
-        '''Trun off the gradient of a given factor matrix'''
+        '''Turn off the gradient of a given factor matrix'''
         self.factors[mode].requires_grad = False
        
     def turn_on_grad(self, mode):
-        '''Trun on the gradient of a given factor matrix'''
+        '''Turn on the gradient of a given factor matrix'''
         self.factors[mode].requires_grad = True
 
     def l2_reg(self, mode):
@@ -122,7 +122,7 @@ class Tatd(nn.Module):
         return torch.norm(self.factors[mode]).pow(2)
 
     def smooth_reg(self, tmode):
-        ''' Perform smoothing regularization on the time factor '''
+        ''' Perform a smoothing regularization on the time factor '''
         
         smoothed = self.smooth(self.factors[tmode])
         sloss = (smoothed - self.factors[tmode]).pow(2)
