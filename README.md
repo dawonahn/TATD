@@ -17,12 +17,12 @@ This is a PyTorch and TensorLy implementation of **Time-Aware Tensor Decompositi
 
 - Install all of the prerequisites
 - You can run the demo script by `bash demo.sh`, which simply runs `src/main.py`.
-- You can change the number of hyper-parameters by modifying `src/main.py`.
+- You can change the datasets and hyper-parameters by modifying `src/main.py`.
 - you can check out the running results in `out` directory.
 
 
 ## Datasets
-
+Preprocessed datasets are in the `data` directory.
 
 |         Name        |          Description          |      Size      |   NNZ  | Granularity in Time |                                    Original Source                                   |
 |:-------------------:|:-----------------------------:|:--------------:|:------:|:-------------------:|:------------------------------------------------------------------------------------:|
