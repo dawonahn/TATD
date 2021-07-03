@@ -7,8 +7,8 @@ Authors:
     - U Kang        (ukang@snu.ac.kr)
     - Data Mining Lab at Seoul National University.
 
-File: src/train.py
-    - Contains source code for training with Adam optimization.
+File: src/tatd.py
+    - Contains source code for implementation of TATD.
 '''
 
 import time
@@ -23,19 +23,15 @@ from tatd.tatd import *
 from tatd.utils import *
 
 def isNaN(num):
-    ''' Find the NaN value'''
     return num != num
 
 def rmse(val, rec):
-    ''' Implement RMSE metric'''
     return torch.sqrt(F.mse_loss(val, rec))
 
 def mae(val, rec):
-    ''' Implement MAE metric'''
     return torch.mean(torch.abs(val-rec))
 
 def evaluate(model, data):
-    ''' Evaluate the model'''
     with torch.no_grad():
         rec = krprod(model.factors, data.indices())
         vals = data.values()
@@ -44,7 +40,6 @@ def evaluate(model, data):
 
         
 def training(model, opt, train, penalty, tmode, nmode):
-    ''' Train the model with Adam optimizer'''
 
     for mode in range(nmode):
         model.turn_on_grad(mode)
@@ -66,9 +61,7 @@ def training(model, opt, train, penalty, tmode, nmode):
     opt.step()
 
     return loss
-
 def train_model(dataset, model, penalty, opt_scheme, lr, loss_path, model_path, total_path, exp):
-    ''' Train the model with Adam optimizer'''
     
     train, valid, test  = dataset['train'], dataset['valid'], dataset['test']
     nmode, tmode = dataset['nmode'], dataset['tmode']
@@ -91,8 +84,11 @@ def train_model(dataset, model, penalty, opt_scheme, lr, loss_path, model_path, 
     start_time = time.time()
     old_rmse, stop_iter = 1e+5, 0
 
-    for n_iter in trange(1, 10000):
-        loss = training(model, opt, train, penalty, tmode, nmode)
+    for n_iter in trange(1, 35000):
+        if exp == 'slice':
+            loss = train_slice(model, opt, train, penalty, tmode, nmode)
+        else:
+            loss = training(model, opt, train, penalty, tmode, nmode)
         trn_rmse, trn_mae = evaluate(model, train) 
         val_rmse, val_mae = evaluate(model, valid)
         print(f"Train RMSE : {trn_rmse} Valid RMSE : {val_rmse}")

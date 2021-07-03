@@ -1,3 +1,15 @@
+'''
+Time-Aware Tensor Decomposition for Sparse Tensors
+
+Authors:
+    - Dawon Ahn     (dawon@snu.ac.kr)
+    - Jun-Gi Jang   (elnino4@snu.ac.kr)
+    - U Kang        (ukang@snu.ac.kr)
+    - Data Mining Lab at Seoul National University.
+
+File: src/main.py
+    - Contains source code for running TATD.
+'''
 
 import argparse
 from src.utils import *

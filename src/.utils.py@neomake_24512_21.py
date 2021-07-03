@@ -7,21 +7,28 @@ Authors:
     - U Kang        (ukang@snu.ac.kr)
     - Data Mining Lab at Seoul National University.
 
-File: src/utils.py
-    - Contains source code for utility functions.
+File: src/tatd.py
+    - Contains source code for implementation of TATD.
 '''
 
 import os
 import torch
+import numpy as np
+import imageio
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+import seaborn as sns
+
+plt.switch_backend('agg')
+cmap = sns.diverging_palette(220, 10, as_cmap=True)
 
 
-def get_path(name, weightf, sparse, rrank, window, penalty, scheme, lr, count, exp):
-    '''Generate paths for saving training results'''
+def get_path(name, weightf, sparse, rrank, window, penalty, scheme, lr , count, exp):
     
-    path=f'out/{scheme}/{name}/training/'
-    path1=f'out/{scheme}/{name}/model/'
-    path2=f'out/{scheme}/{name}/loss/'
-    path3=f'out/{scheme}/{name}/factors/'
+    path = f'out/{scheme}/{name}/training/'
+    path1= f'out/{scheme}/{name}/model/'
+    path2= f'out/{scheme}/{name}/loss/'
+    path3= f'out/{scheme}/{name}/factors/'
 
     for p in [path, path1, path2, path3]:
         if not os.path.isdir(p):
@@ -45,7 +52,10 @@ def get_path(name, weightf, sparse, rrank, window, penalty, scheme, lr, count, e
 
 
 def save_checkpoints(model, path):
-    '''Save a trained model.'''
+    """
+    Save a trained model.
+    """
     os.makedirs(os.path.dirname(path), exist_ok=True)
     torch.save(dict(model_state=model.state_dict()), path)
+
 

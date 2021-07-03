@@ -1,4 +1,15 @@
+'''
+Time-Aware Tensor Decomposition for Sparse Tensors
 
+Authors:
+    - Dawon Ahn     (dawon@snu.ac.kr)
+    - Jun-Gi Jang   (elnino4@snu.ac.kr)
+    - U Kang        (ukang@snu.ac.kr)
+    - Data Mining Lab at Seoul National University.
+
+File: src/read.py
+    - Contains source code for reading datasets.
+'''
 import os
 import torch
 import pandas as pd
@@ -7,10 +18,12 @@ import numpy as np
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def make_index(length, w1, w2):
+    ''' Make dummy indices'''
 
     return np.arange(-w2, w2+1)[None, :] + np.arange(length+1)[:, None]
 
 def empty_slice(df, tmode):
+    ''' Find the empty time slices '''
     
     e_idx = set(np.arange(0, df[tmode].max()+1))
     
@@ -28,7 +41,6 @@ def empty_slice(df, tmode):
 
 
 def global_sparsity(data, tmode):
-
     ''' Calculate time sparsity '''
 
     npy = data.indices().cpu().numpy()
@@ -59,7 +71,6 @@ def global_sparsity(data, tmode):
 
 
 def read_tensor(path, name, dtype):
-
     ''' Read COO format tensor (sparse format) '''
 
     i =  torch.LongTensor(np.load(os.path.join(path, name, dtype + '_idxs.npy')))
@@ -68,7 +79,6 @@ def read_tensor(path, name, dtype):
     return stensor
 
 def read_dataset(name, window, path = '../data'):
-    
     ''' Read data and make metadata '''
     
     dct = {}

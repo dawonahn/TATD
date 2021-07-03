@@ -1,4 +1,15 @@
+'''
+Time-Aware Tensor Decomposition for Sparse Tensors
 
+Authors:
+    - Dawon Ahn     (dawon@snu.ac.kr)
+    - Jun-Gi Jang   (elnino4@snu.ac.kr)
+    - U Kang        (ukang@snu.ac.kr)
+    - Data Mining Lab at Seoul National University.
+
+File: src/tatd.py
+    - Contains source code for implementation of TATD.
+'''
 
 import numpy as np
 import torch
@@ -16,13 +27,13 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def gen_random(size):
+    ''' Make random values with a given size'''
     #if len(size) >1, size must be tuple
     random_value = torch.FloatTensor(rng.random_sample(size))
     return random_value
 
 def krprod(factors, indices_list):
-
-    ''' Khatri-rao product for given nonzeros' indicies '''
+    ''' Implement Khatri Rao Product for given nonzeros' indicies '''
 
     rank = tl.shape(factors[0])[1]
     nnz = len(indices_list[0])
@@ -35,7 +46,7 @@ def krprod(factors, indices_list):
 
 
 class Kernel(nn.Module):
-    ''' Kernel smoothing '''
+    ''' Implement a kernel smoothing regularization'''
     
     def __init__(self, window, density, sigma = 0.5):
         super().__init__()
@@ -45,6 +56,7 @@ class Kernel(nn.Module):
         self.weight = self.gaussian().to(DEVICE)
         
     def gaussian(self):
+    ''' Make a Gaussian kernel'''
         window = int(self.window-1)/2
         sigma2 = self.sigma * self.sigma
         x = torch.FloatTensor(np.arange(-window, window+1))
@@ -55,7 +67,7 @@ class Kernel(nn.Module):
 
     
     def forward(self,factor):
-        
+    ''' Perform a Gaussian kernel smoothing on a temporal factor'''
         row, col = factor.shape
         conv = F.conv2d(factor.view(1, 1, row, col), self.weight, 
                           padding = (int((self.window-1)/2), 0))
@@ -63,7 +75,6 @@ class Kernel(nn.Module):
 
     
 class Tatd(nn.Module):
-   
     ''' Time-Aware Tensor Decomposition '''
 
     def __init__(self, nmode, ndim, tmode, density, rank, window, weightf, sparse, exp):
@@ -87,6 +98,7 @@ class Tatd(nn.Module):
         self.reset_parameters()
        
     def reset_parameters(self):
+        '''Normalize all the factor matrices'''
         for mode in range(self.nmode):
             f = self.factors[mode]
             nn.init.xavier_normal_(f)
@@ -94,20 +106,23 @@ class Tatd(nn.Module):
                 f.requires_grad = False
 
     def forward(self, indices_list):
+        '''Reconstruction the tensor with nonzero's indices'''
         return krprod(self.factors, indices_list)
 
     def turn_off_grad(self, mode):
+        '''Trun off the gradient of a given factor matrix'''
         self.factors[mode].requires_grad = False
        
     def turn_on_grad(self, mode):
+        '''Trun on the gradient of a given factor matrix'''
         self.factors[mode].requires_grad = True
 
     def l2_reg(self, mode):
+        '''Implement a L2 regularization'''
         return torch.norm(self.factors[mode]).pow(2)
 
     def smooth_reg(self, tmode):
-        
-        ''' Smoothing regularization on the time factor '''
+        ''' Perform smoothing regularization on the time factor '''
         
         smoothed = self.smooth(self.factors[tmode])
         sloss = (smoothed - self.factors[tmode]).pow(2)

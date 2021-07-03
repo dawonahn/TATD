@@ -24,7 +24,8 @@ DEVICE=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def gradient(model, opt, train, penalty, tmode):
-    ''' Train a temporal factor matrix with a given optimizer'''
+    ''' Implement a gradient based learning for a factor matrix '''
+
 
     opt.zero_grad()
     rec = model(train.indices())
@@ -38,7 +39,6 @@ def gradient(model, opt, train, penalty, tmode):
 
 
 def my_khatri_rao(matrices, indices_list, skip_matrix=None):
-    ''' Implement Khatri Rao Product'''
 
     if skip_matrix is not None:
         matrices = [matrices[i] for i in range(len(matrices)) if i != skip_matrix]
@@ -61,7 +61,6 @@ def my_khatri_rao(matrices, indices_list, skip_matrix=None):
 
 
 def sparse_least_square(model, train, penalty, mode, rank):
-    ''' Implement a least square solution considering only nonzeros'''
 
     values = train.values()
     indices = train.indices()
@@ -87,7 +86,6 @@ def sparse_least_square(model, train, penalty, mode, rank):
 
 def als_train_model(dataset, model, penalty, opt_scheme, lr, rank,
                     t_path, m_path, l_path, f_path, b_path):
-    ''' train a model with ALS+Adam '''
 
     stop_sign = 3
     name = dataset['name']

@@ -1,20 +1,23 @@
 '''
-Time-Aware Tensor Decomposition for Sparse Tensors
+Accurate Online Tensor Factorization for Temporal Streams with Missing Values 
 
 Authors:
-    - Dawon Ahn     (dawon@snu.ac.kr)
-    - Jun-Gi Jang   (elnino4@snu.ac.kr)
-    - U Kang        (ukang@snu.ac.kr)
+    - Dawon Ahn (dawon@snu.ac.kr)
+    - Jun-Gi Jang (kim79@cooper.edu)
+    - U Kang (ukang@snu.ac.kr)
     - Data Mining Lab at Seoul National University.
 
-File: src/als.py
-    - Contains source code for least square solution.
+File: src/main.py
+    - Contains source code for running STF.
 '''
 
 import time
 import torch
+import torch.functional as F
 import torch.optim as optim
+import torch.nn as nn
 
+from tqdm import tqdm
 from tqdm import trange
 from tatd.tatd import *
 from tatd.utils import *
@@ -24,7 +27,6 @@ DEVICE=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def gradient(model, opt, train, penalty, tmode):
-    ''' Train a temporal factor matrix with a given optimizer'''
 
     opt.zero_grad()
     rec = model(train.indices())
@@ -38,7 +40,6 @@ def gradient(model, opt, train, penalty, tmode):
 
 
 def my_khatri_rao(matrices, indices_list, skip_matrix=None):
-    ''' Implement Khatri Rao Product'''
 
     if skip_matrix is not None:
         matrices = [matrices[i] for i in range(len(matrices)) if i != skip_matrix]
@@ -61,7 +62,6 @@ def my_khatri_rao(matrices, indices_list, skip_matrix=None):
 
 
 def sparse_least_square(model, train, penalty, mode, rank):
-    ''' Implement a least square solution considering only nonzeros'''
 
     values = train.values()
     indices = train.indices()
@@ -87,7 +87,6 @@ def sparse_least_square(model, train, penalty, mode, rank):
 
 def als_train_model(dataset, model, penalty, opt_scheme, lr, rank,
                     t_path, m_path, l_path, f_path, b_path):
-    ''' train a model with ALS+Adam '''
 
     stop_sign = 3
     name = dataset['name']
