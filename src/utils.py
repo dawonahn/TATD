@@ -15,7 +15,7 @@ import os
 import torch
 
 
-def get_path(name, weightf, sparse, rrank, window, penalty, scheme, lr, count, exp):
+def get_path(name, sparse, rrank, window, penalty, scheme, lr, count, exp):
     '''Generate paths for saving training results'''
     
     path=f'out/{scheme}/{name}/training/'
@@ -26,7 +26,7 @@ def get_path(name, weightf, sparse, rrank, window, penalty, scheme, lr, count, e
         if not os.path.isdir(p):
             os.makedirs(p)
     
-    info = f'{weightf}_{sparse}_r_{rrank}_w_{window}_p_{penalty}_lr_{lr}_{count}_{exp}'
+    info = f'result_{sparse}_r_{rrank}_w_{window}_p_{penalty}_lr_{lr}_{count}_{exp}'
     
     train_path = os.path.join(path, info + '.txt')
     model_path = os.path.join(path1, info)
@@ -36,7 +36,7 @@ def get_path(name, weightf, sparse, rrank, window, penalty, scheme, lr, count, e
     
     if not os.path.exists(best_path):
         with open(best_path, 'w') as f:
-            f.write('No.\titers\ttime\tweightf\tsparse\trank\twindow\tpenalty\tscheme\tlr\trmse\tmae\texp\n')
+            f.write('No.\titers\ttime\tsparse\trank\twindow\tpenalty\tscheme\tlr\trmse\tmae\texp\n')
         f.close()
 
     return train_path, model_path, loss_path, best_path

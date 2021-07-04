@@ -24,7 +24,6 @@ def tatd_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--name', type=str, default='indoor', help=u"Dataset")
     parser.add_argument('--sparse', type=float, default=1, help=u"Sparsity penalty")
-    parser.add_argument('--weightf', type=str, default='kernel', help=u"Weight function")
     parser.add_argument('--rank', type=int, default=10, help=u"Size of factor matrix")
     parser.add_argument('--window', type=int, default=3, help=u"Window size")
     parser.add_argument('--penalty', type=float, default=1, help=u"Strength of penalty")
@@ -36,39 +35,38 @@ def tatd_parser():
 
     name = args.name
     ###
-    weightf = args.weightf
-    sparse = args.sparse
     rank = args.rank
     window = args.window
     penalty = args.penalty
+    sparse = args.sparse
     ###
-    scheme = args.scheme
     lr = args.lr
+    scheme = args.scheme
     ###
     count = args.count
     exp = args.exp
 
-    return name, weightf, sparse, rank, window, penalty, scheme, lr, count, exp
+    return name, sparse, rank, window, penalty, scheme, lr, count, exp
 
 def main():
 
-    name, weightf, sparse, rank, window, penalty, scheme, lr, count, exp = tatd_parser()
+    name, sparse, rank, window, penalty, scheme, lr, count, exp = tatd_parser()
 
-    t_path, m_path, l_path, b_path = get_path(name, weightf, sparse, 
+    t_path, m_path, l_path, b_path = get_path(name, sparse, 
                                                 rank, window, penalty,
                                                 scheme, lr, count, exp)
 
     dataset = read_dataset(name, window)
     dataset['count'], dataset['window'] = count, window
     nmode, ndim, tmode =  dataset['nmode'], dataset['ndim'], dataset['tmode']
-    density = dataset['g_beta']
+    density = dataset['ts']
 
-    model = Tatd(nmode, ndim, tmode, density, rank, window, weightf, sparse, exp).to(DEVICE)
+    model = Tatd(nmode, ndim, tmode, density, rank, window, sparse, exp).to(DEVICE)
 
 
     print('---------------------------------------------------------------------------')
     print(f'Dataset : {name:6}')
-    print(f'Weight  : {weightf:6}\tScheme : {scheme:8}\tLr: {lr}\tSparse: {sparse}')
+    print(f'Scheme : {scheme:8}\tLr: {lr}\tSparse: {sparse}')
     print(f'Rank    : {rank:6}\tWindow: {window:8}\tPenalty: {penalty}\t{exp}')
     print('---------------------------------------------------------------------------')
 

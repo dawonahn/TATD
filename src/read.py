@@ -40,7 +40,7 @@ def empty_slice(df, tmode):
     return df
 
 
-def global_sparsity(data, tmode):
+def cal_time_sparsity(data, tmode):
     ''' Calculate time sparsity '''
 
     npy = data.indices().cpu().numpy()
@@ -92,7 +92,7 @@ def read_dataset(name, window, path = 'data'):
     dct['tmode'] = 0 ### Default value
     dct['nmode'] = len(stensor.shape)
     dct['ndim'] = max(dct['train'].shape, dct['valid'].shape, dct['test'].shape)
-    dct['g_beta'] = global_sparsity(dct['train'], dct['tmode'])
+    dct['ts'] = cal_time_sparsity(dct['train'], dct['tmode'])
 
     return dct
 

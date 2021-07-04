@@ -11,10 +11,10 @@ File: src/tatd.py
     - Contains source code for the TATD model.
 '''
 
-import numpy as np
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
+import numpy as np
 
 import tensorly as tl
 from tensorly.random import check_random_state
@@ -77,7 +77,7 @@ class Kernel(nn.Module):
 class Tatd(nn.Module):
     ''' Implement Time-Aware Tensor Decomposition '''
 
-    def __init__(self, nmode, ndim, tmode, density, rank, window, weightf, sparse, exp):
+    def __init__(self, nmode, ndim, tmode, density, rank, window, sparse, exp):
        
         super().__init__()
 
@@ -87,7 +87,6 @@ class Tatd(nn.Module):
         self.sparse = sparse
         self.density = density
         self.exp = exp
-        self.weightf = weightf
         
         lst = [nn.Parameter(gen_random((ndim[mode], rank)))
                 for mode in range(nmode)]
