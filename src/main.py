@@ -26,7 +26,7 @@ def tatd_parser():
     parser.add_argument('--sparse', type=float, default=1, help=u"Sparsity penalty")
     parser.add_argument('--rank', type=int, default=10, help=u"Size of factor matrix")
     parser.add_argument('--window', type=int, default=3, help=u"Window size")
-    parser.add_argument('--penalty', type=float, default=1, help=u"Strength of penalty")
+    parser.add_argument('--penalty', type=float, default=100, help=u"Strength of penalty")
     parser.add_argument('--scheme', type=str, default='als_adam', help=u"Optimizer scheme")
     parser.add_argument('--lr', type=float, default='0.01', help=u"Learning rate")
     parser.add_argument('--count', type=str, default=1, help=u"Experiment for average")
